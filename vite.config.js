@@ -4,7 +4,7 @@ export default defineConfig({
   root: './',
   publicDir: 'assets',
   server: {
-    port: 3000,
+    port: 3001,
     open: true,
     host: true // Allow network access for mobile testing
   },

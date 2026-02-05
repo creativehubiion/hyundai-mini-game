@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Low Poly Scene</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      touch-action: none;
+    }
+
+    #game-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      transition: opacity 0.5s ease-out;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-logo {
+      font-family: 'Arial Black', sans-serif;
+      font-size: 2rem;
+      color: #fff;
+      letter-spacing: 0.3em;
+      margin-bottom: 2rem;
+    }
+
+    .loading-logo span {
+      color: #74b9ff;
+    }
+
+    .progress-bar {
+      width: 200px;
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #74b9ff;
+      width: 0%;
+      transition: width 0.3s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="controls-hint" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#aaa;font-family:monospace;font-size:12px;background:rgba(0,0,0,0.7);padding:12px 20px;border-radius:8px;text-align:center;z-index:50;">
+      <strong>MMB</strong> Rotate &nbsp;|&nbsp; <strong>RMB</strong> Pan &nbsp;|&nbsp; <strong>Scroll</strong> Zoom &nbsp;|&nbsp; <strong>Ctrl+Scroll</strong> Fine &nbsp;|&nbsp; <strong>+/-</strong> Precise &nbsp;|&nbsp; <strong>H</strong> Hide UI<br>
+      <span style="color:#74b9ff;margin-top:4px;display:inline-block;"><strong>T</strong> Translate &nbsp;|&nbsp; <strong>R</strong> Rotate &nbsp;|&nbsp; <strong>Y</strong> Scale &nbsp;|&nbsp; <strong>Esc</strong> Deselect &nbsp;|&nbsp; <strong>Shift</strong> Snap &nbsp;|&nbsp; <strong>Ctrl+Z</strong> Undo</span>
+    </div>
+
+    <!-- Building Spawner Menu -->
+    <div id="building-menu" style="position:absolute;top:20px;left:20px;font-family:monospace;font-size:12px;z-index:50;">
+      <button id="building-toggle" style="background:#9b59b6;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">+ Add</button>
+      <div id="building-panel" style="display:none;background:rgba(0,0,0,0.85);border-radius:8px;padding:12px;margin-top:8px;min-width:140px;">
+        <div style="color:#fff;margin-bottom:10px;font-weight:bold;border-bottom:1px solid #444;padding-bottom:6px;">Add Building</div>
+        <button class="spawn-building-btn" data-building="house1" style="width:100%;background:#555;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">House 1</button>
+        <button class="spawn-building-btn" data-building="house2" style="width:100%;background:#555;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">House 2</button>
+        <button class="spawn-building-btn" data-building="house3" style="width:100%;background:#555;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">House 3</button>
+        <button class="spawn-building-btn" data-building="nuclearplant" style="width:100%;background:#555;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">Nuclear Plant</button>
+        <button class="spawn-building-btn" data-building="warehouse" style="width:100%;background:#555;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">Warehouse</button>
+        <button class="spawn-building-btn" data-building="office" style="width:100%;background:#555;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">Office</button>
+        <button class="spawn-building-btn" data-building="tree1" style="width:100%;background:#27ae60;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">Tree</button>
+        <button class="spawn-building-btn" data-building="trafficlight1" style="width:100%;background:#e67e22;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">Traffic Light</button>
+        <button class="spawn-building-btn" data-building="roadbarrier1" style="width:100%;background:#e74c3c;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">Road Barrier</button>
+        <button class="spawn-building-btn" data-building="apartment1" style="width:100%;background:#3498db;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">Apartment</button>
+        <button class="spawn-building-btn" data-building="building1" style="width:100%;background:#9b59b6;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">Building</button>
+        <button class="spawn-building-btn" data-building="house4" style="width:100%;background:#1abc9c;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">House 4</button>
+        <button class="spawn-building-btn" data-building="autoshop" style="width:100%;background:#34495e;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:4px;text-align:left;">Auto Shop</button>
+        <button class="spawn-building-btn" data-building="factory" style="width:100%;background:#7f8c8d;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;text-align:left;">Factory</button>
+      </div>
+    </div>
+
+    <!-- Scene Manager Menu -->
+    <div id="scene-menu" style="position:absolute;top:20px;right:20px;font-family:monospace;font-size:12px;z-index:50;">
+      <button id="menu-toggle" style="background:#74b9ff;color:#000;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">Scenes</button>
+      <div id="scene-panel" style="display:none;background:rgba(0,0,0,0.85);border-radius:8px;padding:12px;margin-top:8px;min-width:180px;">
+        <div style="color:#fff;margin-bottom:10px;font-weight:bold;border-bottom:1px solid #444;padding-bottom:6px;">Scene Manager</div>
+
+        <!-- Save New Scene -->
+        <div style="margin-bottom:10px;">
+          <input type="text" id="scene-name-input" placeholder="Scene name..." style="width:100%;padding:6px;border:none;border-radius:4px;background:#333;color:#fff;margin-bottom:6px;box-sizing:border-box;">
+          <button id="save-scene-btn" style="width:100%;background:#4CAF50;color:#fff;border:none;padding:6px;border-radius:4px;cursor:pointer;">Save Scene</button>
+        </div>
+
+        <!-- Default Scene -->
+        <button id="default-scene-btn" style="width:100%;background:#ff9800;color:#000;border:none;padding:6px;border-radius:4px;cursor:pointer;margin-bottom:10px;font-weight:bold;">Default Scene</button>
+
+        <!-- Saved Scenes List -->
+        <div id="saved-scenes-list" style="max-height:200px;overflow-y:auto;">
+          <div style="color:#666;font-size:11px;text-align:center;">No saved scenes</div>
+        </div>
+      </div>
+    </div>
+    <div id="loading-screen">
+      <div class="loading-logo">LOW <span>POLY</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+  <script>console.log('Inline script works!');</script>
+  <script type="module" src="/src/lowpoly.js"></script>
+</body>
+</html>
