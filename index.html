@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Hyundai N Racing</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      touch-action: none;
+    }
+
+    #game-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      transition: opacity 0.5s ease-out;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-logo {
+      font-family: 'Arial Black', sans-serif;
+      font-size: 2rem;
+      color: #fff;
+      letter-spacing: 0.3em;
+      margin-bottom: 2rem;
+    }
+
+    .loading-logo span {
+      color: #0066cc;
+    }
+
+    .progress-bar {
+      width: 200px;
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #0066cc;
+      width: 0%;
+      transition: width 0.3s ease-out;
+    }
+  </style>
+  <script type="module" crossorigin src="/hyundai-mini-game/assets/index-LHae8dE2.js"></script>
+  <link rel="modulepreload" crossorigin href="/hyundai-mini-game/assets/three-DqSo6mdQ.js">
+</head>
+<body>
+  <div id="game-container">
+    <div id="controls-hint" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#aaa;font-family:monospace;font-size:12px;background:rgba(0,0,0,0.7);padding:12px 20px;border-radius:8px;text-align:center;z-index:50;">
+      <strong>LMB</strong> Rotate &nbsp;|&nbsp; <strong>MMB</strong> Pan &nbsp;|&nbsp; <strong>Scroll</strong> Zoom &nbsp;|&nbsp; <strong>G</strong> Grid<br>
+      <span style="color:#666;font-size:11px;">F12 Console: loadBuilding("Bld_Apartment_01")</span>
+    </div>
+    <div id="loading-screen">
+      <div class="loading-logo">HYUNDAI <span>N</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
